@@ -12,8 +12,8 @@ project(builder NONE)
 
 include(ExternalProject)
 externalproject_add(sdl2
-    URL "https://libsdl.org/release/SDL2-2.0.20.zip"
-    URL_MD5 "e371cd64e8dd12407c9ecf9861e4874f"
+    URL "https://libsdl.org/release/SDL2-2.26.4.zip"
+    URL_MD5 "221a56ac74d9d755a2d0977321fe6658"
     CMAKE_ARGS
         "-G@CMAKE_GENERATOR@"
         "-C@CACHE_FILE@"
@@ -25,9 +25,6 @@ externalproject_add(sdl2
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DSDL_SHARED=ON
     BUILD_COMMAND ${CMAKE_COMMAND} --build . --config RelWithDebInfo
-    # This patch is for android 2.0.20 compatibility with NDK r25, otherwise SDL2 will not compile
-    # It can be removed when upgrading to 2.24.0. See https://github.com/libsdl-org/SDL/issues/6019
-    PATCH_COMMAND patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/ndk25.patch
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config RelWithDebInfo --target install
     BUILD_ALWAYS 1
 )
