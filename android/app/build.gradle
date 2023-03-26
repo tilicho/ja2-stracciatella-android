@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "io.github.ja2stracciatella"
+        applicationId "io.github.ja2stracciatella.android"
         minSdkVersion 19
         targetSdkVersion 26
 
@@ -45,7 +45,7 @@ android {
             // Specifies the ABI configurations of your native
             // libraries Gradle should build and package with your APK.
             // Currently we dont have armv7 as there is an issue with the SDL version we use
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            abiFilters 'armeabi-v7a' //, 'arm64-v8a', 'x86', 'x86_64'
         }
     }
 
