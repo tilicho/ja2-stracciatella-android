@@ -49,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.MotionEvent;
 
 import java.util.Hashtable;
 import java.util.Locale;
@@ -311,7 +312,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         mNextNativeState = NativeState.INIT;
         mCurrentNativeState = NativeState.INIT;
     }
-    
+
     protected SDLSurface createSDLSurface(Context context) {
         return new SDLSurface(context);
     }
@@ -1244,6 +1245,18 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
          */
         static final int HEIGHT_PADDING = 15;
 
+        static final int buttonB = 97;
+        static final int buttonY = 100;
+        static final int buttonX = 99;
+        static final int buttonA = 96;
+        static final int buttonLB = 102;
+        static final int button_RB = 103;
+        static final int button_LL = 104;
+        static final int button_RT = 105;
+        static final int button_Start = 108;
+        static final int button_Select = 109; // crashes
+
+
         public int x, y, w, h;
 
         public ShowTextInputTask(int x, int y, int w, int h) {
@@ -1303,6 +1316,129 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         return event.isPrintingKey() || event.getKeyCode() == KeyEvent.KEYCODE_SPACE;
     }
 
+    static boolean JoystickKeyPressInit = false;
+
+    public static boolean remapJoysticKeys(int keyCode, KeyEvent event)
+    {
+        if (JoystickKeyPressInit == false)
+        {
+            if (event.getAction() == KeyEvent.ACTION_DOWN)
+                return false;
+
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                JoystickKeyPressInit = true;
+                return false;
+            }
+        }
+
+        switch (keyCode)
+        {
+            case ShowTextInputTask.buttonB:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeMouse(MotionEvent.BUTTON_SECONDARY, KeyEvent.ACTION_DOWN, 0.0f, 0.0f, true);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP)
+                {
+                    onNativeMouse(0, KeyEvent.ACTION_UP, 0.0f, 0.0f, true);
+                    return true;
+                }
+
+            case ShowTextInputTask.buttonX:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeMouse(MotionEvent.BUTTON_PRIMARY, KeyEvent.ACTION_DOWN, 0.0f, 0.0f, true);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP)
+                {
+                    onNativeMouse(0, KeyEvent.ACTION_UP, 0.0f, 0.0f, true);
+                    return true;
+                }
+
+            case ShowTextInputTask.buttonA:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_SPACE);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_SPACE);
+                    return true;
+                }
+
+            case ShowTextInputTask.buttonY:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_D);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_D);
+                    return true;
+                }
+
+            case ShowTextInputTask.buttonLB:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_PAGE_DOWN);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_PAGE_DOWN);
+                    return true;
+                }
+
+            case ShowTextInputTask.button_RB:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_PAGE_UP);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_PAGE_UP);
+                    return true;
+                }
+
+            case ShowTextInputTask.button_LL:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_Z);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_Z);
+                    return true;
+                }
+
+            case ShowTextInputTask.button_RT:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_CTRL_LEFT);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_CTRL_LEFT);
+                    return true;
+                }
+
+            case ShowTextInputTask.button_Start:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_M);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_M);
+                    return true;
+                }
+
+            case ShowTextInputTask.button_Select:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    onNativeKeyDown(KeyEvent.KEYCODE_ESCAPE);
+                    return true;
+                }
+                else if (event.getAction() == KeyEvent.ACTION_UP) {
+                    onNativeKeyUp(KeyEvent.KEYCODE_ESCAPE);
+                    return true;
+                }
+        };
+
+        return false;
+    }
+
     public static boolean handleKeyEvent(View v, int keyCode, KeyEvent event, InputConnection ic) {
         int deviceId = event.getDeviceId();
         int source = event.getSource();
@@ -1314,11 +1450,11 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             }
         }
 
-//        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//            Log.v("SDL", "key down: " + keyCode + ", deviceId = " + deviceId + ", source = " + source);
-//        } else if (event.getAction() == KeyEvent.ACTION_UP) {
-//            Log.v("SDL", "key up: " + keyCode + ", deviceId = " + deviceId + ", source = " + source);
-//        }
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            Log.v("SDL", "key down: " + keyCode + ", deviceId = " + deviceId + ", source = " + source);
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+            Log.v("SDL", "key up: " + keyCode + ", deviceId = " + deviceId + ", source = " + source);
+        }
 
         // Dispatch the different events depending on where they come from
         // Some SOURCE_JOYSTICK, SOURCE_DPAD or SOURCE_GAMEPAD are also SOURCE_KEYBOARD
@@ -1330,10 +1466,20 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         if (SDLControllerManager.isDeviceSDLJoystick(deviceId)) {
             // Note that we process events with specific key codes here
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
+
+                if (remapJoysticKeys(keyCode, event)) {
+                    //Log.v("SDL", "key down: " + keyCode + " remapped");
+                    return true;
+                }
+
                 if (SDLControllerManager.onNativePadDown(deviceId, keyCode) == 0) {
                     return true;
                 }
             } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                if (remapJoysticKeys(keyCode, event)) {
+                    //Log.v("SDL", "key up: " + keyCode + " remapped");
+                    return true;
+                }
                 if (SDLControllerManager.onNativePadUp(deviceId, keyCode) == 0) {
                     return true;
                 }

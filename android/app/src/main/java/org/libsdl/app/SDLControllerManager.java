@@ -188,6 +188,8 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                 SDLJoystick joystick = getJoystick(device_id);
                 if (joystick == null) {
                     InputDevice joystickDevice = InputDevice.getDevice(device_id);
+                    int sources = joystickDevice.getSources();
+
                     joystick = new SDLJoystick();
                     joystick.device_id = device_id;
                     joystick.name = joystickDevice.getName();
@@ -206,6 +208,13 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                             }
                         }
                     }
+
+                    Log.v("SDL", "FOUND JOYSTICK " + device_id +
+                        " name " + joystick.name + "(" + joystick.desc + ") axes " + joystick.axes.size()
+                        + " hats " + joystick.hats.size()
+                        + " sources " + sources + " " + TraceEventSource(sources)
+                        );
+
 
                     mJoysticks.add(joystick);
                     SDLControllerManager.nativeAddJoystick(joystick.device_id, joystick.name, joystick.desc,
@@ -253,24 +262,184 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
         return null;
     }
 
+    protected String TraceEventSource(int source)
+    {
+        String result = new String();
+        if ((source & InputDevice.SOURCE_DPAD) == InputDevice.SOURCE_DPAD)
+            result += "SOURCE_DPAD ";
+        if ((source & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD)
+            result += "SOURCE_GAMEPAD ";
+        if ((source & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK)
+            result += "SOURCE_JOYSTICK ";
+        if ((source & InputDevice.SOURCE_TOUCHSCREEN) == InputDevice.SOURCE_TOUCHSCREEN)
+            result += "SOURCE_TOUCHSCREEN ";
+        if ((source & InputDevice.SOURCE_MOUSE) == InputDevice.SOURCE_MOUSE)
+            result += "SOURCE_MOUSE ";
+        return result;
+    }
+
+    private static float getCenteredAxis(MotionEvent event,
+                                         InputDevice device, int axis, int historyPos,
+                                         boolean limitByFlatRegion) {
+        final InputDevice.MotionRange range =
+            device.getMotionRange(axis, event.getSource());
+
+        // A joystick at rest does not always report an absolute position of
+        // (0,0). Use the getFlat() method to determine the range of values
+        // bounding the joystick axis center.
+        if (range != null) {
+            final float flat = range.getFlat();
+            final float value =
+                historyPos < 0 ? event.getAxisValue(axis):
+                    event.getHistoricalAxisValue(axis, historyPos);
+
+            // Ignore axis values that are within the 'flat' region of the
+            // joystick axis center.
+            if (limitByFlatRegion)
+            {
+                if (Math.abs(value) > flat)
+                    return value;
+            }
+            else
+            {
+                return value;
+            }
+        }
+        return 0;
+    }
+
+    private int prevDpad = -1;
+    private boolean previousAbsMove = false;
+
+    public boolean remapJoysticMove(MotionEvent event,
+                                    float leftSensivity, boolean leftAbsosuteMove,
+                                    float rightSensivity, boolean rightAbsoluteMove,
+                                    float dpadSensivity, boolean dpadAsButtons
+                                    )
+    {
+        InputDevice inputDevice = event.getDevice();
+        int deviceId = event.getDeviceId();
+
+        float x_dpad = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, -1, !leftAbsosuteMove);
+        float y_dpad = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, -1, !leftAbsosuteMove);
+
+        float x_left = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, -1, true);
+        float y_left = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, -1, true);
+
+        float x_right = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, -1, !rightAbsoluteMove);
+        float y_right = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, -1, !rightAbsoluteMove);
+
+        if (dpadAsButtons)
+        {
+            if (x_dpad == 0.0f && y_dpad == 0.0f)
+            {
+                if (prevDpad > 0)
+                {
+                    SDLControllerManager.onNativePadUp(deviceId, prevDpad);
+                    prevDpad = 0;
+                }
+            }
+            else if (x_dpad == 0.0f && y_dpad == 1.0f)
+            {
+                //Log.v("SDL", "dpad 0, 1 - down");
+                prevDpad = KeyEvent.KEYCODE_DPAD_DOWN;
+                SDLControllerManager.onNativePadDown(deviceId, prevDpad);
+
+                return true;
+            }
+            else if (x_dpad == 0.0f && y_dpad == -1.0f)
+            {
+                //Log.v("SDL", "dpad 0, 1 - up");
+                prevDpad = KeyEvent.KEYCODE_DPAD_UP;
+                SDLControllerManager.onNativePadDown(deviceId, prevDpad);
+                return true;
+            }
+            else if (x_dpad == 1.0f && y_dpad == 0.0f)
+            {
+                //Log.v("SDL", "dpad 1, 0 - right");
+                prevDpad = KeyEvent.KEYCODE_DPAD_RIGHT;
+                SDLControllerManager.onNativePadDown(deviceId, prevDpad);
+                return true;
+            }
+            else if (x_dpad == -1.0f && y_dpad == 0.0f)
+            {
+                //Log.v("SDL", "dpad -1, 0 - left");
+                prevDpad = KeyEvent.KEYCODE_DPAD_LEFT;
+                SDLControllerManager.onNativePadDown(deviceId, prevDpad);
+                return true;
+            }
+        }
+
+        x_left *= leftSensivity;
+        y_left *= leftSensivity;
+
+        if (!leftAbsosuteMove)
+        {
+            if (!(x_left == 0.0f && y_left == 0.0f)) {
+                previousAbsMove = false;
+                SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_left, y_left, true);
+                return true;
+            }
+        }
+
+        x_right *= rightSensivity;
+        y_right *= rightSensivity;
+
+        if (!rightAbsoluteMove) {
+            if (!(x_right == 0.0f && y_right == 0.0f)) {
+                previousAbsMove = false;
+                SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_right, y_right, true);
+                return true;
+            }
+        }
+
+
+        if (leftAbsosuteMove && (previousAbsMove || !(x_left == 0.0f && y_left == 0.0f)))
+        {
+            previousAbsMove = true;
+            //Log.v("SDL", "left abs move " + x_left + " " + y_left);
+            x_left = SDLActivity.mSurface.mWidth * (x_left + 1.0f) / 2.0f;
+            y_left = SDLActivity.mSurface.mHeight * (y_left + 1.0f) / 2.0f;
+            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_left, y_left, false);
+            return true;
+        }
+
+        if (rightAbsoluteMove && (previousAbsMove || !(x_right == 0.0f && y_right == 0.0f)))
+        {
+            previousAbsMove = true;
+            //Log.v("SDL", "right abs move " + x_left + " " + y_left);
+            x_right = SDLActivity.mSurface.mWidth * (x_right + 1.0f) / 2.0f;
+            y_right = SDLActivity.mSurface.mHeight * (y_right + 1.0f) / 2.0f;
+            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_right, y_right, false);
+            return true;
+        }
+
+
+
+        return true;
+    }
+
     @Override
     public boolean handleMotionEvent(MotionEvent event) {
         int actionPointerIndex = event.getActionIndex();
         int action = event.getActionMasked();
         if (action == MotionEvent.ACTION_MOVE) {
-            SDLJoystick joystick = getJoystick(event.getDeviceId());
+            int deviceId = event.getDeviceId();
+            SDLJoystick joystick = getJoystick(deviceId);
             if (joystick != null) {
-                for (int i = 0; i < joystick.axes.size(); i++) {
-                    InputDevice.MotionRange range = joystick.axes.get(i);
-                    /* Normalize the value to -1...1 */
-                    float value = (event.getAxisValue(range.getAxis(), actionPointerIndex) - range.getMin()) / range.getRange() * 2.0f - 1.0f;
-                    SDLControllerManager.onNativeJoy(joystick.device_id, i, value);
-                }
-                for (int i = 0; i < joystick.hats.size() / 2; i++) {
-                    int hatX = Math.round(event.getAxisValue(joystick.hats.get(2 * i).getAxis(), actionPointerIndex));
-                    int hatY = Math.round(event.getAxisValue(joystick.hats.get(2 * i + 1).getAxis(), actionPointerIndex));
-                    SDLControllerManager.onNativeHat(joystick.device_id, i, hatX, hatY);
-                }
+
+                //remapJoysticMove(
+                //    event,
+                //    30.0f, true,
+                //    8.0f, false,
+                //    80.0f, true);
+
+                remapJoysticMove(
+                    event,
+                    30.0f, false,
+                    12.0f, false,
+                    80.0f, true);
+
             }
         }
         return true;
