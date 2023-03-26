@@ -35,7 +35,7 @@ SamSiteAirControlModel* SamSiteAirControlModel::deserialize(const JsonValue& obj
 		}
 		for (auto& col : row)
 		{
-			controlTable[i++] = static_cast<int8_t>(col.GetInt64());
+			controlTable[i++] = static_cast<int8_t>(col.toInt());
 		}
 	}
 
