@@ -309,25 +309,24 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
     }
 
     private int prevDpad = -1;
-    private boolean previousAbsMove = false;
 
     public boolean remapJoysticMove(MotionEvent event,
-                                    float leftSensivity, boolean leftAbsosuteMove,
-                                    float rightSensivity, boolean rightAbsoluteMove,
+                                    float leftSensivity, boolean leftFixedStep,
+                                    float rightSensivity, boolean rightFixedStep,
                                     float dpadSensivity, boolean dpadAsButtons
                                     )
     {
         InputDevice inputDevice = event.getDevice();
         int deviceId = event.getDeviceId();
 
-        float x_dpad = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, -1, !leftAbsosuteMove);
-        float y_dpad = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, -1, !leftAbsosuteMove);
+        float x_dpad = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, -1, true);
+        float y_dpad = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, -1, true);
 
         float x_left = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, -1, true);
         float y_left = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, -1, true);
 
-        float x_right = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, -1, !rightAbsoluteMove);
-        float y_right = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, -1, !rightAbsoluteMove);
+        float x_right = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, -1, true);
+        float y_right = getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, -1, true);
 
         if (dpadAsButtons)
         {
@@ -341,7 +340,6 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
             }
             else if (x_dpad == 0.0f && y_dpad == 1.0f)
             {
-                //Log.v("SDL", "dpad 0, 1 - down");
                 prevDpad = KeyEvent.KEYCODE_DPAD_DOWN;
                 SDLControllerManager.onNativePadDown(deviceId, prevDpad);
 
@@ -349,72 +347,57 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
             }
             else if (x_dpad == 0.0f && y_dpad == -1.0f)
             {
-                //Log.v("SDL", "dpad 0, 1 - up");
                 prevDpad = KeyEvent.KEYCODE_DPAD_UP;
                 SDLControllerManager.onNativePadDown(deviceId, prevDpad);
                 return true;
             }
             else if (x_dpad == 1.0f && y_dpad == 0.0f)
             {
-                //Log.v("SDL", "dpad 1, 0 - right");
                 prevDpad = KeyEvent.KEYCODE_DPAD_RIGHT;
                 SDLControllerManager.onNativePadDown(deviceId, prevDpad);
                 return true;
             }
             else if (x_dpad == -1.0f && y_dpad == 0.0f)
             {
-                //Log.v("SDL", "dpad -1, 0 - left");
                 prevDpad = KeyEvent.KEYCODE_DPAD_LEFT;
                 SDLControllerManager.onNativePadDown(deviceId, prevDpad);
                 return true;
             }
         }
 
-        x_left *= leftSensivity;
-        y_left *= leftSensivity;
+        if (leftFixedStep) {
+            if (x_left != 0.0f)
+                x_left = x_left < 0 ? -leftSensivity : leftSensivity;
 
-        if (!leftAbsosuteMove)
-        {
-            if (!(x_left == 0.0f && y_left == 0.0f)) {
-                previousAbsMove = false;
-                SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_left, y_left, true);
-                return true;
-            }
+            if (y_left != 0.0f)
+                y_left = y_left < 0 ? -leftSensivity : leftSensivity;
+        }
+        else {
+            x_left *= leftSensivity;
+            y_left *= leftSensivity;
         }
 
-        x_right *= rightSensivity;
-        y_right *= rightSensivity;
-
-        if (!rightAbsoluteMove) {
-            if (!(x_right == 0.0f && y_right == 0.0f)) {
-                previousAbsMove = false;
-                SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_right, y_right, true);
-                return true;
-            }
-        }
-
-
-        if (leftAbsosuteMove && (previousAbsMove || !(x_left == 0.0f && y_left == 0.0f)))
-        {
-            previousAbsMove = true;
-            //Log.v("SDL", "left abs move " + x_left + " " + y_left);
-            x_left = SDLActivity.mSurface.mWidth * (x_left + 1.0f) / 2.0f;
-            y_left = SDLActivity.mSurface.mHeight * (y_left + 1.0f) / 2.0f;
-            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_left, y_left, false);
+        if (!(x_left == 0.0f && y_left == 0.0f)) {
+            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_left, y_left, true);
             return true;
         }
 
-        if (rightAbsoluteMove && (previousAbsMove || !(x_right == 0.0f && y_right == 0.0f)))
-        {
-            previousAbsMove = true;
-            //Log.v("SDL", "right abs move " + x_left + " " + y_left);
-            x_right = SDLActivity.mSurface.mWidth * (x_right + 1.0f) / 2.0f;
-            y_right = SDLActivity.mSurface.mHeight * (y_right + 1.0f) / 2.0f;
-            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_right, y_right, false);
-            return true;
+        if (rightFixedStep){
+            if (x_right != 0.0f)
+                x_right = x_right < 0 ? -rightSensivity : rightSensivity;
+
+            if (y_right != 0.0f)
+                y_right = y_right < 0 ? -rightSensivity : rightSensivity;
+        }
+        else {
+            x_right *= rightSensivity;
+            y_right *= rightSensivity;
         }
 
-
+        if (!(x_right == 0.0f && y_right == 0.0f)) {
+            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_right, y_right, true);
+            return true;
+        }
 
         return true;
     }
@@ -428,15 +411,9 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
             SDLJoystick joystick = getJoystick(deviceId);
             if (joystick != null) {
 
-                //remapJoysticMove(
-                //    event,
-                //    30.0f, true,
-                //    8.0f, false,
-                //    80.0f, true);
-
                 remapJoysticMove(
                     event,
-                    30.0f, false,
+                    15.0f, true,
                     12.0f, false,
                     80.0f, true);
 
