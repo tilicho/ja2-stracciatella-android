@@ -106,6 +106,7 @@ class LauncherActivity : AppCompatActivity() {
     }
 
     fun getRecommendedResolution(): Resolution {
+
         val screenWidth =
             Integer.max(resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
         val screenHeight =
@@ -120,20 +121,40 @@ class LauncherActivity : AppCompatActivity() {
             val height = Resolution.DEFAULT.height + ((screenHeight - Resolution.DEFAULT.height.toInt() * scalingInt) / scalingInt).toUInt()
             return Resolution(width - (width % 2u), height - (height % 2u))
         }
-        val width = Resolution.DEFAULT.width + ((screenWidth - Resolution.DEFAULT.width.toInt() * scaling) / scaling).toUInt()
-        return Resolution(width - (width % 2u), Resolution.DEFAULT.height)
+
+        if (configurationModel.scalingQuality.value == ScalingQuality.NEAR_PERFECT) {
+            val width =
+                Resolution.DEFAULT.width + ((screenWidth - Resolution.DEFAULT.width.toInt() * scaling) / scaling).toUInt()
+            return Resolution(width - (width % 2u), Resolution.DEFAULT.height)
+        }
+
+        return Resolution.DEFAULT; // by default set resolution to default for linear mode for android
     }
 
 
     fun getScaleXForStretchMode() : Float
     {
-        if (configurationModel.resolution.value == null)
-            return 0.0f;
+        // set strech fit to x only if we have linear scaling mode && resolution is 640 x 480
+        if (configurationModel.scalingQuality.value != ScalingQuality.LINEAR)
+            return 0.0f
 
-        val resolutionX = configurationModel.resolution.value!!.width.toDouble()
+        if (configurationModel.resolution.value == null )
+            return 0.0f
 
-        val scalingX = resolutionX / Resolution.DEFAULT.width.toDouble()
-        return scalingX.toFloat()
+        val resWidth = configurationModel.resolution.value!!.width
+        val resHeight = configurationModel.resolution.value!!.height
+
+        if (resWidth != Resolution.DEFAULT.width.toUInt() || resHeight != Resolution.DEFAULT.height.toUInt())
+            return 0.0f
+
+        val screenWidth =
+            Integer.max(resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
+        val screenHeight =
+            Integer.min(resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
+
+        val scaleX = (screenWidth.toDouble() / screenHeight.toDouble()) * (Resolution.DEFAULT.height.toDouble() / Resolution.DEFAULT.width.toDouble())
+
+        return scaleX.toFloat();
     }
 
     private fun startGame() {
