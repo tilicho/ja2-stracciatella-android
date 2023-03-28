@@ -124,12 +124,28 @@ class LauncherActivity : AppCompatActivity() {
         return Resolution(width - (width % 2u), Resolution.DEFAULT.height)
     }
 
+
+    fun getScaleXForStretchMode() : Float
+    {
+        if (configurationModel.resolution.value == null)
+            return 0.0f;
+
+        val resolutionX = configurationModel.resolution.value!!.width.toDouble()
+
+        val scalingX = resolutionX / Resolution.DEFAULT.width.toDouble()
+        return scalingX.toFloat()
+    }
+
     private fun startGame() {
         try {
+            val bundle = Bundle()
+            bundle.putFloat("stretchScaleX", getScaleXForStretchMode())
+
             getPermissionsIfNecessaryForAction {
                 saveJA2Json()
                 NativeExceptionContainer.resetException()
                 val intent = Intent(this@LauncherActivity, StracciatellaActivity::class.java)
+                intent.putExtras(bundle)
                 startActivity(intent)
             }
         } catch (e: IOException) {
