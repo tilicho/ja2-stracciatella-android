@@ -197,6 +197,9 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     public float transformX(float x)
     {
+        if (mScaleX == 0.0)
+            return x;
+
         return (x / mScaleX) + (mWidth - mWidth / mScaleX) / 2.0f;
     }
 
