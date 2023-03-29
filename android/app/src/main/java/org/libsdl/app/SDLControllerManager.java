@@ -364,13 +364,20 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                 return true;
             }
         }
+        else
+        {
+            if (!(x_dpad == 0.0f && y_dpad == 0.0f)) {
+                x_dpad *= dpadSensivity;
+                y_dpad *= dpadSensivity;
+                SDLActivity.onNativeMouse(0, MotionEvent.ACTION_HOVER_MOVE, x_dpad, y_dpad, true);
+                return true;
+            }
+        }
 
-        if (leftFixedStep) {
-            if (x_left != 0.0f)
-                x_left = x_left < 0 ? -leftSensivity : leftSensivity;
-
-            if (y_left != 0.0f)
-                y_left = y_left < 0 ? -leftSensivity : leftSensivity;
+        if (leftFixedStep && !(x_left == 0.0f && y_left == 0.0f)) {
+            double len = Math.sqrt(x_left * x_left + y_left * y_left);
+            x_left *= leftSensivity / len;
+            y_left *= leftSensivity / len;
         }
         else {
             x_left *= leftSensivity;
@@ -382,12 +389,10 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
             return true;
         }
 
-        if (rightFixedStep){
-            if (x_right != 0.0f)
-                x_right = x_right < 0 ? -rightSensivity : rightSensivity;
-
-            if (y_right != 0.0f)
-                y_right = y_right < 0 ? -rightSensivity : rightSensivity;
+        if (rightFixedStep && !(x_right == 0.0f && y_right == 0.0f)){
+            double len = Math.sqrt(x_right * x_right + y_right * y_right);
+            x_right *= rightSensivity / len;
+            y_right *= rightSensivity / len;
         }
         else {
             x_right *= rightSensivity;
@@ -413,9 +418,9 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
 
                 remapJoysticMove(
                     event,
-                    15.0f, true,
-                    12.0f, false,
-                    80.0f, true);
+                    12.0f, true,
+                    10.0f, false,
+                    50.0f, !SDLActivity.isAltPressed());
 
             }
         }

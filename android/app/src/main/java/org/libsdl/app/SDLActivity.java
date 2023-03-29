@@ -1316,7 +1316,12 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         return event.isPrintingKey() || event.getKeyCode() == KeyEvent.KEYCODE_SPACE;
     }
 
-    static boolean JoystickKeyPressInit = false;
+    private static boolean JoystickKeyPressInit = false;
+    private static boolean AltPressed = false;
+
+    public static boolean isAltPressed(){
+        return AltPressed;
+    }
 
     public static boolean remapJoysticKeys(int keyCode, KeyEvent event)
     {
@@ -1343,6 +1348,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     onNativeMouse(0, KeyEvent.ACTION_UP, 0.0f, 0.0f, true);
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.buttonX:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -1354,6 +1360,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     onNativeMouse(0, KeyEvent.ACTION_UP, 0.0f, 0.0f, true);
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.buttonA:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -1364,6 +1371,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     onNativeKeyUp(KeyEvent.KEYCODE_SPACE);
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.buttonY:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -1374,36 +1382,54 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     onNativeKeyUp(KeyEvent.KEYCODE_D);
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.buttonLB:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    onNativeKeyDown(KeyEvent.KEYCODE_PAGE_DOWN);
+                    if (AltPressed)
+                        onNativeKeyDown(KeyEvent.KEYCODE_Z);
+                    else
+                        onNativeKeyDown(KeyEvent.KEYCODE_PAGE_DOWN);
                     return true;
                 }
                 else if (event.getAction() == KeyEvent.ACTION_UP) {
-                    onNativeKeyUp(KeyEvent.KEYCODE_PAGE_DOWN);
+                    if (AltPressed)
+                        onNativeKeyUp(KeyEvent.KEYCODE_Z);
+                    else
+                        onNativeKeyUp(KeyEvent.KEYCODE_PAGE_DOWN);
+
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.button_RB:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    onNativeKeyDown(KeyEvent.KEYCODE_PAGE_UP);
-                    return true;
+                    if (AltPressed)
+                        onNativeKeyDown(KeyEvent.KEYCODE_B);
+                    else
+                        onNativeKeyDown(KeyEvent.KEYCODE_PAGE_UP);
                 }
                 else if (event.getAction() == KeyEvent.ACTION_UP) {
-                    onNativeKeyUp(KeyEvent.KEYCODE_PAGE_UP);
+                    if (AltPressed)
+                        onNativeKeyUp(KeyEvent.KEYCODE_B);
+                    else
+                        onNativeKeyUp(KeyEvent.KEYCODE_PAGE_UP);
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.button_LL:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    onNativeKeyDown(KeyEvent.KEYCODE_Z);
+                    Log.v("SDL", "alt pressed " + keyCode);
+                    AltPressed = true;
                     return true;
                 }
                 else if (event.getAction() == KeyEvent.ACTION_UP) {
-                    onNativeKeyUp(KeyEvent.KEYCODE_Z);
+                    Log.v("SDL", "alt unpressed");
+                    AltPressed = false;
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.button_RT:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -1414,6 +1440,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     onNativeKeyUp(KeyEvent.KEYCODE_CTRL_LEFT);
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.button_Start:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -1424,6 +1451,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     onNativeKeyUp(KeyEvent.KEYCODE_M);
                     return true;
                 }
+                break;
 
             case ShowTextInputTask.button_Select:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -1434,6 +1462,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     onNativeKeyUp(KeyEvent.KEYCODE_ESCAPE);
                     return true;
                 }
+                break;
         };
 
         return false;
