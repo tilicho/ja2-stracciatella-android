@@ -1364,11 +1364,17 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
             case ShowTextInputTask.buttonA:
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    onNativeKeyDown(KeyEvent.KEYCODE_SPACE);
+                    if (AltPressed)
+                        onNativeKeyDown(KeyEvent.KEYCODE_L);
+                    else
+                        onNativeKeyDown(KeyEvent.KEYCODE_SPACE);
                     return true;
                 }
                 else if (event.getAction() == KeyEvent.ACTION_UP) {
-                    onNativeKeyUp(KeyEvent.KEYCODE_SPACE);
+                    if (AltPressed)
+                        onNativeKeyUp(KeyEvent.KEYCODE_L);
+                    else
+                        onNativeKeyUp(KeyEvent.KEYCODE_SPACE);
                     return true;
                 }
                 break;

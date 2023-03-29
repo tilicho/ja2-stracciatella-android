@@ -420,7 +420,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                     event,
                     12.0f, true,
                     10.0f, false,
-                    50.0f, !SDLActivity.isAltPressed());
+                    20.0f, !SDLActivity.isAltPressed());
 
             }
         }
