@@ -158,9 +158,16 @@ if (WITH_SOUND_DEBUG)
 endif()
 
 if(BUILD_SDL_LIB)
+    set(SDL2_DISABLE_UNINSTALL ON)
+    set(SDL2_DISABLE_INSTALL ON)
+
+    if (ANDROID)
+        set(SDL_SHARED ON)
+    endif()
+
     set(SDL2_LIBRARY "")
     set(SDL2_INCLUDE_DIR "")
-    add_subdirectory("dependencies/lib-sdl2")
+    add_subdirectory("dependencies/SDL2-2.26.4")
 else()
     if (NOT (LOCAL_SDL_LIB STREQUAL ""))
         message(STATUS "Using local SDL from " "${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_SDL_LIB}")
@@ -273,11 +280,34 @@ set(
     string_theory-internal
     lua
 )
+
+
 set(
     LAUNCHER_LIBRARIES
     ${SDL2_LIBRARY}
     string_theory-internal
 )
+
+if (ANDROID)
+
+    if (TARGET SDL2::SDL2main)
+        LIST(APPEND JA2_LIBRARIES SDL2::SDL2main)
+        LIST(APPEND LAUNCHER_LIBRARIES SDL2::SDL2main)
+    endif()
+
+    LIST(APPEND JA2_LIBRARIES SDL2::SDL2)
+    LIST(APPEND LAUNCHER_LIBRARIES SDL2::SDL2)
+
+else()
+
+    if (TARGET SDL2::SDL2-static)
+        LIST(APPEND JA2_LIBRARIES SDL2::SDL2-static)
+        LIST(APPEND LAUNCHER_LIBRARIES SDL2::SDL2-static)
+    endif()
+
+endif()
+
+
 if (MINGW)
     LIST(APPEND JA2_LIBRARIES mingw_stdthreads)
 endif()

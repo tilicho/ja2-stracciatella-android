@@ -37,7 +37,10 @@ android {
                           '-DWITH_UNITTESTS=OFF',
                           '-DWITH_RUST_BINARIES=OFF',
                           '-DCMAKE_CXX_FLAGS=-fPIC',
-                          '-DCMAKE_C_FLAGS=-fPIC'
+                          '-DCMAKE_C_FLAGS=-fPIC',
+                          '-DSDL2_DISABLE_INSTALL=ON',
+                          '-DSDL2_DISABLE_UNINSTALL=ON',
+                          '-DSDL_SHARED=ON'
             }
         }
 
