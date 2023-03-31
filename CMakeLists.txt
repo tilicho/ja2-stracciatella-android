@@ -158,6 +158,9 @@ if (WITH_SOUND_DEBUG)
 endif()
 
 if(BUILD_SDL_LIB)
+
+    option(SDL2_DISABLE_INSTALL    "Disable installation of SDL2" ON)
+    option(SDL2_DISABLE_UNINSTALL  "Disable uninstallation of SDL2" ON)
     set(SDL2_DISABLE_UNINSTALL ON)
     set(SDL2_DISABLE_INSTALL ON)
 
@@ -524,7 +527,6 @@ endif()
 if(APPLE)
     file(GLOB APPLE_DIST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/assets/distr-files-mac/*.txt")
     install(FILES ${APPLE_DIST_FILES} DESTINATION .)
-    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lib-SDL2-2.0.20-macos/SDL2.framework DESTINATION .)
 endif()
 
 ## Build AppImage
