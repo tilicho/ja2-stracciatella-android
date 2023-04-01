@@ -688,7 +688,7 @@ void SaveSquadInfoToSavedGameFile(HWFILE const f)
 }
 
 
-void LoadSquadInfoFromSavedGameFile(HWFILE const f)
+void LoadSquadInfoFromSavedGameFile(HWFILE const f, int version)
 {
 	// Load in the squad info
 	BYTE data[SQUAD_INFO_NUM_RECORDS * 12] = { 0 };
@@ -704,7 +704,10 @@ void LoadSquadInfoFromSavedGameFile(HWFILE const f)
 
 	int extraSquads = 0; // if the save has larger squads than us, we will split into extra squads
 	int slotPos[NUMBER_OF_SQUADS] = {}; // next available slot per squad
-	for (int i = 0; i < SQUAD_INFO_NUM_RECORDS; i++)
+
+	const int maxNumberOfSquads = (version <= 99) ? 6 : SQUAD_INFO_NUM_RECORDS;
+
+	for (int i = 0; i < maxNumberOfSquads; i++)
 	{
 		INT16 id;
 		UINT8 ubFormatVersion, ubSquadID;
