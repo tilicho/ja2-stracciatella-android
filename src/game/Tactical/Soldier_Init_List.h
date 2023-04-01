@@ -2,6 +2,7 @@
 #define __SOLDIER_INIT_LIST_H
 
 #include "Soldier_Create.h"
+#include "IEncodingCorrector.h"
 
 struct SOLDIERINITNODE
 {
@@ -29,7 +30,7 @@ extern SOLDIERINITNODE *gSoldierInitTail;
 //These serialization functions are assuming the passing of a valid file
 //pointer to the beginning of the save/load area, at the correct part of the
 //map file.
-void LoadSoldiersFromMap(HWFILE, bool stracLinuxFormat);
+void LoadSoldiersFromMap(HWFILE, bool stracLinuxFormat, const IEncodingCorrector* fixer);
 
 BOOLEAN SaveSoldiersToMap( HWFILE fp );
 

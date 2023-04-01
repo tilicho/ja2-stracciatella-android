@@ -9,6 +9,7 @@
 #include "Soldier_Profile_Type.h"
 #include <string_theory/string>
 #include <vector>
+#include "IEncodingCorrector.h"
 
 
 //Load the Map modifications from the saved game file
@@ -22,7 +23,7 @@ void SaveMapTempFilesToSavedGameFile(HWFILE);
 void SaveCurrentSectorsInformationToTempItemFile(void);
 
 //Loads the Currents Sectors information ( world Items, rotting corpses, ... ) from the temporary file used to store the sectores items
-void LoadCurrentSectorsInformationFromTempItemsFile();
+void LoadCurrentSectorsInformationFromTempItemsFile(const IEncodingCorrector* fixer);
 
 // Loads a World Item array from that sectors temp item file
 std::vector<WORLDITEM> LoadWorldItemsFromTempItemFile(const SGPSector& sMap);

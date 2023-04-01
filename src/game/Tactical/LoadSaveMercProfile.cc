@@ -220,7 +220,7 @@ void ExtractMercProfile(BYTE const* const Src, MERCPROFILESTRUCT& p, bool stracL
 
 /** Extract IMP merc profile from file.
 * If saved checksum is not correct, exception will be thrown. */
-void ExtractImpProfileFromFile(SGPFile *hFile, INT32 *iProfileId, INT32 *iPortraitNumber, MERCPROFILESTRUCT& p)
+void ExtractImpProfileFromFile(SGPFile *hFile, INT32 *iProfileId, INT32 *iPortraitNumber, MERCPROFILESTRUCT& p, const IEncodingCorrector* fixer)
 {
 	UINT32 fileSize = hFile->size();
 
@@ -237,13 +237,13 @@ void ExtractImpProfileFromFile(SGPFile *hFile, INT32 *iProfileId, INT32 *iPortra
 	{
 		std::vector<BYTE> data(MERC_PROFILE_SIZE_STRAC_LINUX);
 		hFile->read(data.data(), MERC_PROFILE_SIZE_STRAC_LINUX);
-		ExtractMercProfile(data.data(), p, true, &checksum, NULL);
+		ExtractMercProfile(data.data(), p, true, &checksum, fixer);
 	}
 	else
 	{
 		std::vector<BYTE> data(MERC_PROFILE_SIZE);
 		hFile->read(data.data(), MERC_PROFILE_SIZE);
-		ExtractMercProfile(data.data(), p, false, &checksum, NULL);
+		ExtractMercProfile(data.data(), p, false, &checksum, fixer);
 	}
 }
 

@@ -439,7 +439,7 @@ static UINT32 GetLastTimePlayerWasInSector(void);
 static void   LoadRottingCorpsesFromTempCorpseFile(const SGPSector& sMap);
 
 
-void LoadCurrentSectorsInformationFromTempItemsFile()
+void LoadCurrentSectorsInformationFromTempItemsFile(const IEncodingCorrector* fixer)
 {
 	UINT32 const flags = GetSectorFlags(gWorldSector);
 
@@ -499,7 +499,7 @@ void LoadCurrentSectorsInformationFromTempItemsFile()
 	{
 		if (flags & SF_ENEMY_PRESERVED_TEMP_FILE_EXISTS)
 		{
-			LoadEnemySoldiersFromTempFile();
+			LoadEnemySoldiersFromTempFile(fixer);
 		}
 	}
 	else
@@ -507,11 +507,11 @@ void LoadCurrentSectorsInformationFromTempItemsFile()
 		// use the new way of loading the enemy and civilian placements
 		if (flags & SF_ENEMY_PRESERVED_TEMP_FILE_EXISTS)
 		{
-			NewWayOfLoadingEnemySoldiersFromTempFile();
+			NewWayOfLoadingEnemySoldiersFromTempFile(fixer);
 		}
 		if (flags & SF_CIV_PRESERVED_TEMP_FILE_EXISTS)
 		{
-			NewWayOfLoadingCiviliansFromTempFile();
+			NewWayOfLoadingCiviliansFromTempFile(fixer);
 		}
 	}
 

@@ -2500,7 +2500,7 @@ static void SetupItemDetailsMode(BOOLEAN fAllowRecursion)
 
 			// Always use windows format because here we are loading a map
 			// file, not a user save
-			ExtractSoldierCreateFromFile(hfile, &priority, false);
+			ExtractSoldierCreateFromFile(hfile, &priority, false, getDataFilesEncodingCorrector());
 		}
 		else
 		{ //non detailed placements don't have items, so skip
@@ -2552,7 +2552,7 @@ static void SetupItemDetailsMode(BOOLEAN fAllowRecursion)
 
 			// Always use windows format because here we are loading a map
 			// file, not a user save
-			ExtractSoldierCreateFromFile(hfile, &priority, false);
+			ExtractSoldierCreateFromFile(hfile, &priority, false, getDataFilesEncodingCorrector());
 		}
 		else
 		{ //non detailed placements don't have items, so skip

@@ -122,6 +122,7 @@
 #include <iterator>
 #include <map>
 #include <stdexcept>
+#include "GameRes.h"
 
 //Used by PickGridNoToWalkIn
 #define MAX_ATTEMPTS 200
@@ -886,7 +887,7 @@ static void EnterSector(const SGPSector& sector)
 	{
 		try
 		{ // Load the current sectors Information From the temporary files
-			LoadCurrentSectorsInformationFromTempItemsFile();
+			LoadCurrentSectorsInformationFromTempItemsFile(getDataFilesEncodingCorrector());
 		}
 		catch (...)
 		{ /* The integrity of the temp files have been compromised.  Boot out of the

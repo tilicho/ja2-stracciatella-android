@@ -191,7 +191,7 @@ BOOLEAN SaveSoldiersToMap( HWFILE fp )
 }
 
 
-void LoadSoldiersFromMap(HWFILE const f, bool stracLinuxFormat)
+void LoadSoldiersFromMap(HWFILE const f, bool stracLinuxFormat, const IEncodingCorrector* fixer)
 {
 	UINT8 const n_individuals = gMapInformation.ubNumIndividuals;
 
@@ -225,7 +225,7 @@ void LoadSoldiersFromMap(HWFILE const f, bool stracLinuxFormat)
 			// Add the static detailed placement information in the same newly created
 			// node as the basic placement.
 			SOLDIERCREATE_STRUCT* const sc = new SOLDIERCREATE_STRUCT{};
-			ExtractSoldierCreateFromFile(f, sc, stracLinuxFormat);
+			ExtractSoldierCreateFromFile(f, sc, stracLinuxFormat, fixer);
 
 			if (sc->ubProfile != NO_PROFILE)
 			{

@@ -538,7 +538,7 @@ void ParseSavedGameHeader(const BYTE *data, SAVED_GAME_HEADER& h, bool stracLinu
 	}
 	else
 	{
-		h.sSavedGameDesc = d.readUTF16(SIZE_OF_SAVE_GAME_DESC);
+		h.sSavedGameDesc = d.readUTF16(SIZE_OF_SAVE_GAME_DESC, getDataFilesEncodingCorrector());
 	}
 	EXTR_SKIP(  d, 4)
 	EXTR_U32(   d, h.uiDay)
@@ -630,7 +630,7 @@ static void LoadGeneralInfo(HWFILE, UINT32 savegame_version);
 static void LoadMeanwhileDefsFromSaveGameFile(HWFILE, UINT32 savegame_version);
 static void LoadOppListInfoFromSavedGame(HWFILE);
 static void LoadPreRandomNumbersFromSaveGameFile(HWFILE);
-static void LoadSavedMercProfiles(HWFILE, UINT32 savegame_version, bool stracLinuxFormat);
+static void LoadSavedMercProfiles(HWFILE, UINT32 savegame_version, bool stracLinuxFormat, const IEncodingCorrector* fixer);
 static void LoadSoldierStructure(HWFILE, UINT32 savegame_version, bool stracLinuxFormat);
 static void LoadTacticalStatusFromSavedGame(HWFILE, bool stracLinuxFormat);
 static void LoadWatchedLocsFromSavedGame(HWFILE);
@@ -771,7 +771,7 @@ void LoadSavedGame(const ST::string &saveName)
 	LoadLaptopInfoFromSavedGame(f);
 
 	BAR(0, "Merc Profiles...");
-	LoadSavedMercProfiles(f, version, stracLinuxFormat);
+	LoadSavedMercProfiles(f, version, stracLinuxFormat, getDataFilesEncodingCorrector());
 
 	BAR(30, "Soldier Structure...");
 	LoadSoldierStructure(f, version, stracLinuxFormat);
@@ -1010,7 +1010,7 @@ void LoadSavedGame(const ST::string &saveName)
 	{
 		try
 		{ // Load the current sectors Information From the temporary files
-			LoadCurrentSectorsInformationFromTempItemsFile();
+			LoadCurrentSectorsInformationFromTempItemsFile(getDataFilesEncodingCorrector());
 		}
 		catch (...)
 		{
@@ -1288,7 +1288,7 @@ void SaveIMPPlayerProfiles()
 	}
 }
 
-static void LoadSavedMercProfiles(HWFILE const f, UINT32 const savegame_version, bool stracLinuxFormat)
+static void LoadSavedMercProfiles(HWFILE const f, UINT32 const savegame_version, bool stracLinuxFormat, const IEncodingCorrector* fixer)
 {
 	// Loop through all the profiles to load
 	void (&reader)(HWFILE, BYTE*, UINT32) = savegame_version < 87 ?
@@ -1299,7 +1299,7 @@ static void LoadSavedMercProfiles(HWFILE const f, UINT32 const savegame_version,
 		UINT32 dataSize = stracLinuxFormat ? MERC_PROFILE_SIZE_STRAC_LINUX : MERC_PROFILE_SIZE;
 		std::vector<BYTE> data(dataSize);
 		reader(f, data.data(), dataSize);
-		ExtractMercProfile(data.data(), *i, stracLinuxFormat, &checksum, NULL);
+		ExtractMercProfile(data.data(), *i, stracLinuxFormat, &checksum, fixer);
 		if (checksum != SoldierProfileChecksum(*i))
 		{
 			throw std::runtime_error("Merc profile checksum mismatch");

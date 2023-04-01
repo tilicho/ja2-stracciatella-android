@@ -37,7 +37,7 @@ static void RemoveTempFile(SectorFlags const file_flag, const SGPSector& sector)
 }
 
 // OLD SAVE METHOD:  This is the old way of loading the enemies and civilians
-void LoadEnemySoldiersFromTempFile()
+void LoadEnemySoldiersFromTempFile(const IEncodingCorrector* fixer)
 {
 	gfRestoringEnemySoldiersFromTempFile = TRUE;
 
@@ -149,7 +149,7 @@ void LoadEnemySoldiersFromTempFile()
 	{
 		SOLDIERCREATE_STRUCT tempDetailedPlacement;
 		UINT16 saved_checksum;
-		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum);
+		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum, fixer);
 		FOR_EACH_SOLDIERINITNODE(curr)
 		{
 			BASIC_SOLDIERCREATE_STRUCT* const bp = curr->pBasicPlacement;
@@ -247,10 +247,10 @@ no_add:
 }
 
 
-static void CountNumberOfElitesRegularsAdminsAndCreaturesFromEnemySoldiersTempFile(UINT8* n_elites, UINT8* n_regulars, UINT8* n_admins, UINT8* n_creatures);
+static void CountNumberOfElitesRegularsAdminsAndCreaturesFromEnemySoldiersTempFile(UINT8* n_elites, UINT8* n_regulars, UINT8* n_admins, UINT8* n_creatures, const IEncodingCorrector* fixer);
 
 
-void NewWayOfLoadingEnemySoldiersFromTempFile()
+void NewWayOfLoadingEnemySoldiersFromTempFile(const IEncodingCorrector* fixer)
 {
 	UINT8 ubStrategicElites;
 	UINT8 ubStrategicTroops;
@@ -287,7 +287,7 @@ void NewWayOfLoadingEnemySoldiersFromTempFile()
 	if (!(gTacticalStatus.uiFlags & LOADING_SAVED_GAME))
 	{
 		// Get the number of enemies form the temp file
-		CountNumberOfElitesRegularsAdminsAndCreaturesFromEnemySoldiersTempFile(&ubStrategicElites, &ubStrategicTroops, &ubStrategicAdmins, &ubStrategicCreatures);
+		CountNumberOfElitesRegularsAdminsAndCreaturesFromEnemySoldiersTempFile(&ubStrategicElites, &ubStrategicTroops, &ubStrategicAdmins, &ubStrategicCreatures, fixer);
 		// If any of the counts differ from what is in memory
 		if (ubStrategicElites != ubNumElites ||
 			ubStrategicTroops != ubNumTroops ||
@@ -398,7 +398,7 @@ void NewWayOfLoadingEnemySoldiersFromTempFile()
 	{
 		UINT16 saved_checksum;
 		SOLDIERCREATE_STRUCT tempDetailedPlacement;
-		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum);
+		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum, fixer);
 		FOR_EACH_SOLDIERINITNODE(curr)
 		{
 			BASIC_SOLDIERCREATE_STRUCT* const bp = curr->pBasicPlacement;
@@ -490,7 +490,7 @@ void NewWayOfLoadingEnemySoldiersFromTempFile()
 }
 
 
-void NewWayOfLoadingCiviliansFromTempFile()
+void NewWayOfLoadingCiviliansFromTempFile(const IEncodingCorrector* fixer)
 {
 	gfRestoringCiviliansFromTempFile = TRUE;
 
@@ -561,7 +561,7 @@ void NewWayOfLoadingCiviliansFromTempFile()
 	for (INT32 i = 0; i != slots; ++i)
 	{
 		UINT16 saved_checksum;
-		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum);
+		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum, fixer);
 		FOR_EACH_SOLDIERINITNODE(curr)
 		{
 			BASIC_SOLDIERCREATE_STRUCT* const bp = curr->pBasicPlacement;
@@ -834,7 +834,7 @@ void NewWayOfSavingEnemyAndCivliansToTempFile(const SGPSector& sSector, BOOLEAN 
 }
 
 
-static void CountNumberOfElitesRegularsAdminsAndCreaturesFromEnemySoldiersTempFile(UINT8* const n_elites, UINT8* const n_regulars, UINT8* const n_admins, UINT8* const n_creatures)
+static void CountNumberOfElitesRegularsAdminsAndCreaturesFromEnemySoldiersTempFile(UINT8* const n_elites, UINT8* const n_regulars, UINT8* const n_admins, UINT8* const n_creatures, const IEncodingCorrector* fixer)
 {
 	// Make sure the variables are initialized
 	*n_elites    = 0;
@@ -897,7 +897,7 @@ static void CountNumberOfElitesRegularsAdminsAndCreaturesFromEnemySoldiersTempFi
 	{
 		UINT16 saved_checksum;
 		SOLDIERCREATE_STRUCT tempDetailedPlacement;
-		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum);
+		ExtractSoldierCreateFromFileWithChecksumAndGuess(f, &tempDetailedPlacement, &saved_checksum, fixer);
 		// Increment the current type of soldier
 		switch (tempDetailedPlacement.ubSoldierClass)
 		{
