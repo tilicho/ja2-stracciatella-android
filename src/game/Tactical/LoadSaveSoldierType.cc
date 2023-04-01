@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <stdexcept>
-
 static UINT32 MercChecksum(SOLDIERTYPE const& s)
 {
 	UINT32 sum = 1;
@@ -37,7 +36,7 @@ static UINT32 MercChecksum(SOLDIERTYPE const& s)
 }
 
 
-void ExtractSoldierType(const BYTE* const data, SOLDIERTYPE* const s, bool stracLinuxFormat, UINT32 uiSavedGameVersion)
+void ExtractSoldierType(const BYTE* const data, SOLDIERTYPE* const s, bool stracLinuxFormat, UINT32 uiSavedGameVersion, const IEncodingCorrector* fixer)
 {
 	UINT16 usPathingData[ MAX_PATH_LIST_SIZE ];
 	UINT16 usPathDataSize;
@@ -88,7 +87,7 @@ void ExtractSoldierType(const BYTE* const data, SOLDIERTYPE* const s, bool strac
 	}
 	else
 	{
-		s->name = d.readUTF16(SOLDIERTYPE_NAME_LENGTH);
+		s->name = d.readUTF16(SOLDIERTYPE_NAME_LENGTH, fixer);
 	}
 	EXTR_I8(d, s->bVisible)
 	EXTR_I8(d, s->bActive)

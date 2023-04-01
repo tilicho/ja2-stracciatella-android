@@ -511,7 +511,7 @@ static void PlayNewMessageSound(void)
 }
 
 
-static ScrollStringSt* ExtractScrollStringFromFile(HWFILE const f, bool stracLinuxFormat)
+static ScrollStringSt* ExtractScrollStringFromFile(HWFILE const f, bool stracLinuxFormat, const IEncodingCorrector* fixer)
 {
 	UINT32 size;
 	f->read(&size, sizeof(size));
@@ -530,7 +530,7 @@ static ScrollStringSt* ExtractScrollStringFromFile(HWFILE const f, bool stracLin
 		else
 		{
 			size_t const len = size / 2;
-			s->pString = reader.readUTF16(len);
+			s->pString = reader.readUTF16(len, fixer);
 		}
 	}
 
@@ -596,7 +596,7 @@ void SaveMapScreenMessagesToSaveGameFile(HWFILE const hFile)
 }
 
 
-void LoadMapScreenMessagesFromSaveGameFile(HWFILE const hFile, bool stracLinuxFormat)
+void LoadMapScreenMessagesFromSaveGameFile(HWFILE const hFile, bool stracLinuxFormat, const IEncodingCorrector* fixer)
 {
 	// clear tactical message queue
 	ClearTacticalMessageQueue();
@@ -617,7 +617,7 @@ void LoadMapScreenMessagesFromSaveGameFile(HWFILE const hFile, bool stracLinuxFo
 	//Loopthrough all the messages
 	FOR_EACH(ScrollStringSt*, i, gMapScreenMessageList)
 	{
-		ScrollStringSt* const s = ExtractScrollStringFromFile(hFile, stracLinuxFormat);
+		ScrollStringSt* const s = ExtractScrollStringFromFile(hFile, stracLinuxFormat, fixer);
 
 		ScrollStringSt* const old = *i;
 		if (old)

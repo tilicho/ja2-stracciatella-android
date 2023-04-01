@@ -4,6 +4,7 @@
 #include "Types.h"
 
 #include <string_theory/string>
+#include "IEncodingCorrector.h"
 
 
 extern UINT8 gubCurrentMapMessageString;
@@ -46,7 +47,7 @@ void ClearDisplayedListOfTacticalStrings( void );
 // clear ALL strings in the tactical Message Queue
 void ClearTacticalMessageQueue( void );
 
-void LoadMapScreenMessagesFromSaveGameFile(HWFILE, bool stracLinuxFormat);
+void LoadMapScreenMessagesFromSaveGameFile(HWFILE, bool stracLinuxFormat, const IEncodingCorrector* fixer);
 void SaveMapScreenMessagesToSaveGameFile(HWFILE);
 
 // use these if you are not Kris
