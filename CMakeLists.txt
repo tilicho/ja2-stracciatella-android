@@ -165,6 +165,7 @@ if(BUILD_SDL_LIB)
     set(SDL2_DISABLE_INSTALL ON)
 
     if (ANDROID)
+        option(SDL_SHARED "shared sdl" ON)
         set(SDL_SHARED ON)
     endif()
 
