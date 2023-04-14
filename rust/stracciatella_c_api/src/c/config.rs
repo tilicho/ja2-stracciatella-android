@@ -283,6 +283,13 @@ pub extern "C" fn EngineOptions_setScalingQuality(
     engine_options.scaling_quality = scaling_quality
 }
 
+/// Gets `EngineOptions.stretch_to_fit`.
+#[no_mangle]
+pub extern "C" fn EngineOptions_getStretchToFit(ptr: *const EngineOptions) -> bool {
+    let engine_options = unsafe_ref(ptr);
+    engine_options.stretch_to_fit
+}
+
 /// Gets `EngineOptions.start_in_window`.
 #[no_mangle]
 pub extern "C" fn EngineOptions_shouldStartInWindow(ptr: *const EngineOptions) -> bool {

@@ -321,6 +321,8 @@ int main(int argc, char* argv[])
 			VideoSetFullScreen(FALSE);
 		}
 
+		VideoSetStretchToFit(EngineOptions_getStretchToFit(params.get()));
+		
 		if (EngineOptions_shouldStartWithoutSound(params.get())) {
 			SoundEnableSound(FALSE);
 		}

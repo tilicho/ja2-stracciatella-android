@@ -74,6 +74,7 @@ static SDL_Surface* ScreenBuffer;
 static SDL_Texture* ScreenTexture;
 static SDL_Texture* ScaledScreenTexture;
 static Uint32       g_window_flags = 0;
+static BOOLEAN      g_stretch_to_fit = false;
 static VideoScaleQuality ScaleQuality = VideoScaleQuality::LINEAR;
 
 static void DeletePrimaryVideoSurfaces(void);
@@ -102,6 +103,11 @@ void VideoSetFullScreen(const BOOLEAN enable)
 	{
 		g_window_flags &= ~SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
+}
+
+void VideoSetStretchToFit(const BOOLEAN stretchToFit)
+{
+	g_stretch_to_fit = stretchToFit;
 }
 
 void VideoToggleFullScreen(void)
@@ -146,7 +152,22 @@ void InitializeVideoManager(const VideoScaleQuality quality)
 					g_window_flags);
 
 	GameRenderer = SDL_CreateRenderer(g_game_window, -1, 0);
-	SDL_RenderSetLogicalSize(GameRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	int renderW = 0;
+	int renderH = 0;
+	SDL_GetRendererOutputSize(GameRenderer, &renderW, &renderH);
+
+	if (g_stretch_to_fit)
+	{
+		const float scaleX = (float)renderW / SCREEN_WIDTH;
+		const float scaleY = (float)renderH / SCREEN_HEIGHT;
+		SDL_RenderSetLogicalSize(GameRenderer, SCREEN_WIDTH * scaleX, scaleY * SCREEN_HEIGHT);
+		SDL_RenderSetScale(GameRenderer, scaleX, scaleY);
+	}
+	else
+	{
+		SDL_RenderSetLogicalSize(GameRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+	}
 
 	SurfaceUniquePtr windowIcon(SDL_CreateRGBSurfaceWithFormatFrom(
 			(void*)gWindowIconData.pixel_data,

@@ -81,6 +81,8 @@ pub struct EngineOptions {
     pub start_without_sound: bool,
     /// Whether to enum-gen for Lua
     pub run_enum_gen: bool,
+    /// Whether to stretch to fullscreen
+    pub stretch_to_fit: bool,
 }
 
 impl Default for EngineOptions {
@@ -103,6 +105,7 @@ impl Default for EngineOptions {
             start_in_debug_mode: false,
             start_without_sound: false,
             run_enum_gen: false,
+            stretch_to_fit: true,
         }
     }
 }
