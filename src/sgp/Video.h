@@ -44,4 +44,6 @@ void InitializeVideoSurfaceManager(void);
 // Deletes any video Surface placed into list
 void ShutdownVideoSurfaceManager(void);
 
+BOOLEAN IsStretchToFitMode();
+
 #endif

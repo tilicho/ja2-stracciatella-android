@@ -560,27 +560,35 @@ void SimulateMouseMovement( UINT32 uiNewXPos, UINT32 uiNewYPos )
 		return;
 	}
 
-	int windowWidth, windowHeight;
-	SDL_GetWindowSize(GAME_WINDOW, &windowWidth, &windowHeight);
+	if (!IsStretchToFitMode())
+	{
+		int windowWidth, windowHeight;
+		SDL_GetWindowSize(GAME_WINDOW, &windowWidth, &windowHeight);
 
-	double windowWidthD = windowWidth;
-	double windowHeightD = windowHeight;
-	double screenWidthD = SCREEN_WIDTH;
-	double screenHeightD = SCREEN_HEIGHT;
+		const double windowWidthD = windowWidth;
+		const double windowHeightD = windowHeight;
+		const double screenWidthD = SCREEN_WIDTH;
+		const double screenHeightD = SCREEN_HEIGHT;
 
-	double scaleFactorX = windowWidthD / screenWidthD;
-	double scaleFactorY = windowHeightD / screenHeightD;
-	double scaleFactor = windowWidth > windowHeight ? scaleFactorY : scaleFactorX;
+		const double scaleFactorX = windowWidthD / screenWidthD;
+		const double scaleFactorY = windowHeightD / screenHeightD;
 
-	double scaledWindowWidth = scaleFactor * screenWidthD;
-	double scaledWindowHeight = scaleFactor * screenHeightD;
+		const double scaleFactor = windowWidth > windowHeight ? scaleFactorY : scaleFactorX;
 
-	double paddingX = (windowWidthD - scaledWindowWidth) / 2.0;
-	double paddingY = (windowHeight - scaledWindowHeight) / 2.0;
-	int windowPositionX = paddingX + (double)uiNewXPos * scaledWindowWidth / screenWidthD;
-	int windowPositionY = paddingY + (double)uiNewYPos * scaledWindowHeight / screenHeightD;
+		const double scaledWindowWidth = scaleFactor * screenWidthD;
+		const double scaledWindowHeight = scaleFactor * screenHeightD;
 
-	SDL_WarpMouseInWindow(GAME_WINDOW, windowPositionX, windowPositionY);
+		const double paddingX = (windowWidthD - scaledWindowWidth) / 2.0;
+		const double paddingY = (windowHeight - scaledWindowHeight) / 2.0;
+		const int windowPositionX = paddingX + (double)uiNewXPos * scaledWindowWidth / screenWidthD;
+		const int windowPositionY = paddingY + (double)uiNewYPos * scaledWindowHeight / screenHeightD;
+
+		SDL_WarpMouseInWindow(GAME_WINDOW, windowPositionX, windowPositionY);
+	}
+	else
+	{
+		SDL_WarpMouseInWindow(GAME_WINDOW, uiNewXPos, uiNewYPos);
+	}
 }
 
 

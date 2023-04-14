@@ -110,6 +110,11 @@ void VideoSetStretchToFit(const BOOLEAN stretchToFit)
 	g_stretch_to_fit = stretchToFit;
 }
 
+BOOLEAN IsStretchToFitMode()
+{
+	return g_stretch_to_fit;
+}
+
 void VideoToggleFullScreen(void)
 {
 	if (SDL_GetWindowFlags(g_game_window) & SDL_WINDOW_FULLSCREEN_DESKTOP)
@@ -153,14 +158,15 @@ void InitializeVideoManager(const VideoScaleQuality quality)
 
 	GameRenderer = SDL_CreateRenderer(g_game_window, -1, 0);
 
-	int renderW = 0;
-	int renderH = 0;
-	SDL_GetRendererOutputSize(GameRenderer, &renderW, &renderH);
-
-	if (g_stretch_to_fit)
+	if (IsStretchToFitMode())
 	{
+		int renderW = 0;
+		int renderH = 0;
+		SDL_GetRendererOutputSize(GameRenderer, &renderW, &renderH);
+
 		const float scaleX = (float)renderW / SCREEN_WIDTH;
 		const float scaleY = (float)renderH / SCREEN_HEIGHT;
+
 		SDL_RenderSetLogicalSize(GameRenderer, SCREEN_WIDTH * scaleX, scaleY * SCREEN_HEIGHT);
 		SDL_RenderSetScale(GameRenderer, scaleX, scaleY);
 	}
