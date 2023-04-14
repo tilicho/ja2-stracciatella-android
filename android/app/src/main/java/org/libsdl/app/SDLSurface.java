@@ -35,7 +35,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     protected Display mDisplay;
 
     // Keep track of the surface size to normalize touch events
-    protected float mWidth, mHeight, mScaleX;
+    protected float mWidth, mHeight;
 
     // Is SurfaceView ready for rendering
     public boolean mIsSurfaceReady;
@@ -112,8 +112,6 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         mWidth = width;
         mHeight = height;
-        mScaleX = SDLActivity.mSingleton.getWindow().getDecorView().getScaleX();
-
         int nDeviceWidth = width;
         int nDeviceHeight = height;
         try
@@ -195,14 +193,6 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         return SDLActivity.handleKeyEvent(v, keyCode, event, null);
     }
 
-    public float transformX(float x)
-    {
-        if (mScaleX == 0.0)
-            return x;
-
-        return (x / mScaleX) + (mWidth - mWidth / mScaleX) / 2.0f;
-    }
-
     // Touch events
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -249,7 +239,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                 case MotionEvent.ACTION_MOVE:
                     for (i = 0; i < pointerCount; i++) {
                         pointerFingerId = event.getPointerId(i);
-                        x = transformX(event.getX(i)) / mWidth;
+                        x = event.getX(i) / mWidth;
                         y = event.getY(i) / mHeight;
                         p = event.getPressure(i);
                         if (p > 1.0f) {
@@ -274,7 +264,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                     }
 
                     pointerFingerId = event.getPointerId(i);
-                    x = transformX(event.getX(i)) / mWidth;
+                    x = event.getX(i) / mWidth;
                     y = event.getY(i) / mHeight;
                     p = event.getPressure(i);
                     if (p > 1.0f) {
@@ -288,7 +278,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                 case MotionEvent.ACTION_CANCEL:
                     for (i = 0; i < pointerCount; i++) {
                         pointerFingerId = event.getPointerId(i);
-                        x = transformX(event.getX(i)) / mWidth;
+                        x = event.getX(i) / mWidth;
                         y = event.getY(i) / mHeight;
                         p = event.getPressure(i);
                         if (p > 1.0f) {
