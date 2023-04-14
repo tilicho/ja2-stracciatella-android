@@ -560,19 +560,19 @@ void SimulateMouseMovement( UINT32 uiNewXPos, UINT32 uiNewYPos )
 		return;
 	}
 
+	int windowWidth, windowHeight;
+	SDL_GetWindowSize(GAME_WINDOW, &windowWidth, &windowHeight);
+
+	const double windowWidthD = windowWidth;
+	const double windowHeightD = windowHeight;
+	const double screenWidthD = SCREEN_WIDTH;
+	const double screenHeightD = SCREEN_HEIGHT;
+
+	const double scaleFactorX = windowWidthD / screenWidthD;
+	const double scaleFactorY = windowHeightD / screenHeightD;
+
 	if (!IsStretchToFitMode())
 	{
-		int windowWidth, windowHeight;
-		SDL_GetWindowSize(GAME_WINDOW, &windowWidth, &windowHeight);
-
-		const double windowWidthD = windowWidth;
-		const double windowHeightD = windowHeight;
-		const double screenWidthD = SCREEN_WIDTH;
-		const double screenHeightD = SCREEN_HEIGHT;
-
-		const double scaleFactorX = windowWidthD / screenWidthD;
-		const double scaleFactorY = windowHeightD / screenHeightD;
-
 		const double scaleFactor = windowWidth > windowHeight ? scaleFactorY : scaleFactorX;
 
 		const double scaledWindowWidth = scaleFactor * screenWidthD;
@@ -587,7 +587,14 @@ void SimulateMouseMovement( UINT32 uiNewXPos, UINT32 uiNewYPos )
 	}
 	else
 	{
-		SDL_WarpMouseInWindow(GAME_WINDOW, uiNewXPos, uiNewYPos);
+		const float currScale = (float)windowWidthD / windowHeightD;
+		const float origScale = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
+		const float scaleMod = currScale / origScale;
+
+		const int windowPositionX = (double)uiNewXPos * scaleFactorX / scaleMod;
+		const int windowPositionY = (double)uiNewYPos * scaleFactorY;
+
+		SDL_WarpMouseInWindow(GAME_WINDOW, windowPositionX, windowPositionY);
 	}
 }
 

@@ -76,7 +76,7 @@ static SDL_Texture* ScaledScreenTexture;
 static Uint32       g_window_flags = 0;
 static BOOLEAN      g_stretch_to_fit = false;
 static VideoScaleQuality ScaleQuality = VideoScaleQuality::LINEAR;
-
+static float g_scaleStretchToFitX = 0.0f;
 static void DeletePrimaryVideoSurfaces(void);
 
 // returns if desktop resolution larger game resolution
@@ -164,11 +164,13 @@ void InitializeVideoManager(const VideoScaleQuality quality)
 		int renderH = 0;
 		SDL_GetRendererOutputSize(GameRenderer, &renderW, &renderH);
 
-		const float scaleX = (float)renderW / SCREEN_WIDTH;
-		const float scaleY = (float)renderH / SCREEN_HEIGHT;
+		SLOGE("render out  {}x{}", renderW, renderH);
 
-		SDL_RenderSetLogicalSize(GameRenderer, SCREEN_WIDTH * scaleX, scaleY * SCREEN_HEIGHT);
-		SDL_RenderSetScale(GameRenderer, scaleX, scaleY);
+		const float currScale = (float)renderW / renderH;
+		const float origScale = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
+		g_scaleStretchToFitX = currScale / origScale;
+
+		SDL_RenderSetLogicalSize(GameRenderer, SCREEN_WIDTH * g_scaleStretchToFitX, SCREEN_HEIGHT);
 	}
 	else
 	{
@@ -646,7 +648,12 @@ void RefreshScreen(void)
 		SDL_RenderCopy(GameRenderer, ScaledScreenTexture, nullptr, nullptr);
 	}
 	else {
-		SDL_RenderCopy(GameRenderer, ScreenTexture, NULL, NULL);
+		SDL_Rect rec;
+		rec.x = 0;
+		rec.y = 0;
+		rec.w = SCREEN_WIDTH * g_scaleStretchToFitX;
+		rec.h = SCREEN_HEIGHT;
+		SDL_RenderCopy(GameRenderer, ScreenTexture, NULL, &rec);
 	}
 
 	SDL_RenderPresent(GameRenderer);
