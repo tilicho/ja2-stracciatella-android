@@ -648,12 +648,19 @@ void RefreshScreen(void)
 		SDL_RenderCopy(GameRenderer, ScaledScreenTexture, nullptr, nullptr);
 	}
 	else {
-		SDL_Rect rec;
-		rec.x = 0;
-		rec.y = 0;
-		rec.w = SCREEN_WIDTH * g_scaleStretchToFitX;
-		rec.h = SCREEN_HEIGHT;
-		SDL_RenderCopy(GameRenderer, ScreenTexture, NULL, &rec);
+		if (IsStretchToFitMode())
+		{
+			SDL_Rect rec;
+			rec.x = 0;
+			rec.y = 0;
+			rec.w = SCREEN_WIDTH * g_scaleStretchToFitX;
+			rec.h = SCREEN_HEIGHT;
+			SDL_RenderCopy(GameRenderer, ScreenTexture, NULL, &rec);
+		}
+		else
+		{
+			SDL_RenderCopy(GameRenderer, ScreenTexture, NULL, NULL);
+		}
 	}
 
 	SDL_RenderPresent(GameRenderer);
