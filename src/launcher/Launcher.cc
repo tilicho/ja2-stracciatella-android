@@ -138,6 +138,7 @@ void Launcher::show() {
 	}
 	fullscreenCheckbox->callback( (Fl_Callback*)widgetChanged, (void*)(this) );
 	playSoundsCheckbox->callback( (Fl_Callback*)widgetChanged, (void*)(this) );
+	stretchToFitCheckbox->callback( (Fl_Callback*)widgetChanged, (void*)(this) );
 	RustPointer<char> ja2_json_path(findPathFromStracciatellaHome(this->engineOptions.get(), "ja2.json", false, true));
 	if (ja2_json_path) {
 		ja2JsonPathOutput->value(ja2_json_path.get());
@@ -234,12 +235,15 @@ void Launcher::initializeInputsFromDefaults() {
 
 	fullscreenCheckbox->value(EngineOptions_shouldStartInFullscreen(this->engineOptions.get()) ? 1 : 0);
 	playSoundsCheckbox->value(EngineOptions_shouldStartWithoutSound(this->engineOptions.get()) ? 0 : 1);
+	stretchToFitCheckbox->value(EngineOptions_getStretchToFit(this->engineOptions.get()) ? 1 : 0);
+
 	update(false);
 }
 
 int Launcher::writeJsonFile() {
 	EngineOptions_setStartInFullscreen(this->engineOptions.get(), fullscreenCheckbox->value());
 	EngineOptions_setStartWithoutSound(this->engineOptions.get(), !playSoundsCheckbox->value());
+	EngineOptions_setStretchToFit(this->engineOptions.get(), stretchToFitCheckbox->value());
 
 	EngineOptions_setVanillaGameDir(this->engineOptions.get(), gameDirectoryInput->value());
 	EngineOptions_setSaveGameDir(this->engineOptions.get(), saveGameDirectoryInput->value());

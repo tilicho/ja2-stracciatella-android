@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0305
+version 1.0308
 header_name {.h}
 code_name {.cc}
 class StracciatellaLauncher {open
@@ -8,14 +8,14 @@ class StracciatellaLauncher {open
   } {
     Fl_Window stracciatellaLauncher {
       label {JA2 Stracciatella Launcher} open
-      xywh {586 89 520 380} type Double resizable size_range {520 390 0 0} visible
+      xywh {690 451 520 380} type Double resizable size_range {520 390 0 0} visible
     } {
       Fl_Tabs tabs {open
         xywh {0 0 520 350} align 9 resizable
       } {
         Fl_Group {} {
-          label {@> Play  } selected
-          xywh {0 50 520 300} labelsize 16 labelcolor 24
+          label {@> Play  }
+          xywh {0 50 520 300} labelsize 16 labelcolor 24 hide
         } {
           Fl_Button editorButton {
             label {Start Map Editor}
@@ -109,7 +109,7 @@ class StracciatellaLauncher {open
         }
         Fl_Group {} {
           label {@menu Settings } open
-          xywh {0 50 520 300} labelcolor 24 hide
+          xywh {0 50 520 300} labelcolor 24
         } {
           Fl_Group {} {open
             xywh {10 60 500 45}
@@ -154,8 +154,8 @@ class StracciatellaLauncher {open
               xywh {20 185 480 30} down_box BORDER_BOX align 5 resizable
             } {}
           }
-          Fl_Group {} {open
-            xywh {10 220 500 65}
+          Fl_Group {} {open selected
+            xywh {10 220 495 104}
           } {
             Fl_Check_Button fullscreenCheckbox {
               label Fullscreen
@@ -164,6 +164,10 @@ class StracciatellaLauncher {open
             Fl_Check_Button playSoundsCheckbox {
               label {Play Sounds}
               xywh {20 255 109 30} down_box DOWN_BOX value 1
+            }
+            Fl_Check_Button stretchToFitCheckbox {
+              label {Stretch to fit}
+              xywh {20 289 115 35} down_box DOWN_BOX value 1
             }
           }
         }

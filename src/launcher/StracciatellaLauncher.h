@@ -45,6 +45,7 @@ public:
   Fl_Choice *scalingModeChoice;
   Fl_Check_Button *fullscreenCheckbox;
   Fl_Check_Button *playSoundsCheckbox;
+  Fl_Check_Button *stretchToFitCheckbox;
   Fl_Group *logsTab;
   Fl_Text_Display *logsDisplay;
   Fl_Output *ja2JsonPathOutput;

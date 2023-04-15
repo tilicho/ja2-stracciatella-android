@@ -153,7 +153,7 @@ n) but gives sharp images.");
           } // Fl_Choice* scalingModeChoice
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(10, 220, 500, 65);
+        { Fl_Group* o = new Fl_Group(10, 220, 500, 104);
           { fullscreenCheckbox = new Fl_Check_Button(20, 225, 95, 30, "Fullscreen");
             fullscreenCheckbox->tooltip("Check to run in a borderless full-screen window");
             fullscreenCheckbox->down_box(FL_DOWN_BOX);
@@ -162,6 +162,11 @@ n) but gives sharp images.");
             playSoundsCheckbox->down_box(FL_DOWN_BOX);
             playSoundsCheckbox->value(1);
           } // Fl_Check_Button* playSoundsCheckbox
+          {
+            stretchToFitCheckbox = new Fl_Check_Button(20, 289, 115, 35, "Stretch to fit");
+            stretchToFitCheckbox->down_box(FL_DOWN_BOX);
+            stretchToFitCheckbox->value(1);
+          } // Fl_Check_Button* stretchToFitCheckbox
           o->end();
         } // Fl_Group* o
         o->end();

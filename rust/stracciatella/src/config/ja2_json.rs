@@ -41,6 +41,7 @@ pub struct Ja2JsonContent {
     brightness: Option<f32>,
     resversion: Option<VanillaVersion>,
     fullscreen: Option<bool>,
+    stretch_to_fit: Option<bool>,
     scaling: Option<ScalingQuality>,
     debug: Option<bool>,
     nosound: Option<bool>,
@@ -104,6 +105,7 @@ impl Ja2Json {
         copy_to!(content.resversion, engine_options.resource_version);
         copy_to!(content.fullscreen, engine_options.start_in_fullscreen);
         copy_to!(content.scaling, engine_options.scaling_quality);
+        copy_to!(content.stretch_to_fit, engine_options.stretch_to_fit);
         copy_to!(content.debug, engine_options.start_in_debug_mode);
         copy_to!(content.nosound, engine_options.start_without_sound);
 
@@ -128,6 +130,7 @@ impl Ja2Json {
             resversion: None,
             fullscreen: None,
             scaling: None,
+            stretch_to_fit: None,
             debug: None,
             nosound: None,
         };
@@ -139,6 +142,7 @@ impl Ja2Json {
         copy_to!(engine_options.brightness, content.brightness);
         copy_to!(engine_options.resource_version, content.resversion);
         copy_to!(engine_options.start_in_fullscreen, content.fullscreen);
+        copy_to!(engine_options.stretch_to_fit, content.stretch_to_fit);
         copy_to!(engine_options.scaling_quality, content.scaling);
         copy_to!(engine_options.start_in_debug_mode, content.debug);
         copy_to!(engine_options.start_without_sound, content.nosound);

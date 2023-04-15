@@ -104,6 +104,7 @@ impl Cli {
             "Start the map editor (Editor.slf is required)",
         );
         opts.optflag("", "fullscreen", "Start the game in the fullscreen mode");
+        opts.optflag("", "stretch_to_fit", "Stretch window to fit screen");
         opts.optflag("", "nosound", "Turn the sound and music off");
         opts.optflag("", "window", "Start the game in a window");
         opts.optflag("", "debug", "Enable Debug Mode");
@@ -198,6 +199,10 @@ impl Cli {
 
                 if m.opt_present("fullscreen") {
                     engine_options.start_in_fullscreen = true;
+                }
+
+                if m.opt_present("stretch_to_fit") {
+                    engine_options.stretch_to_fit = true;
                 }
 
                 if m.opt_present("nosound") {

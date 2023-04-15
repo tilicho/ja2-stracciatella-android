@@ -266,6 +266,13 @@ pub extern "C" fn EngineOptions_setStartInFullscreen(ptr: *mut EngineOptions, va
     engine_options.start_in_fullscreen = val
 }
 
+/// Sets `EngineOptions.stretch_to_fit`.
+#[no_mangle]
+pub extern "C" fn EngineOptions_setStretchToFit(ptr: *mut EngineOptions, val: bool) {
+    let engine_options = unsafe_mut(ptr);
+    engine_options.stretch_to_fit = val
+}
+
 /// Gets `EngineOptions.scaling_quality`.
 #[no_mangle]
 pub extern "C" fn EngineOptions_getScalingQuality(ptr: *const EngineOptions) -> ScalingQuality {
