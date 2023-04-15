@@ -729,7 +729,7 @@ void LoadSquadInfoFromSavedGameFile(HWFILE const f, int version)
 
 		if (extraSquads > 0) s->bAssignment = static_cast<INT8>(ubSquadID); // fix soldier's assignment if we created extra squads
 	}
-	Assert(d.getConsumed() == lengthof(data));
+	Assert(d.getConsumed() == (size_t)(maxNumberOfSquads) * 12);
 
 	// Load in the Squad movement IDs
 	f->read(SquadMovementGroups, sizeof(SquadMovementGroups));
